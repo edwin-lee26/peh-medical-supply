@@ -1611,6 +1611,10 @@
             dashboardSection.removeAttribute('hidden');
             renderDeptTabs();
             showDashboard();
+            // Deep-link: admin.html#products etc. (opened from the left rail)
+            var target = (location.hash || '').replace('#', '');
+            var valid = ['overview', 'weekly', 'products', 'categories', 'orders', 'analytics'].indexOf(target) !== -1;
+            if (valid) switchSection(target);
         } else {
             dashboardSection.setAttribute('hidden', '');
             loginSection.removeAttribute('hidden');
