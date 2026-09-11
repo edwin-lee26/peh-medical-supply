@@ -762,8 +762,12 @@ table.table th.num { text-align: center; }
 .stat-card span { font-size: 12.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
 
 /* ---------- 15. Admin layout ---------- */
-.admin-shell { display: grid; grid-template-columns: 240px 1fr; gap: 22px; margin: 22px 0 40px; align-items: start; }
+.admin-shell { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 22px; margin: 22px 0 40px; align-items: start; }
 .admin-sidebar {
+  position: sticky;
+  top: 86px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -1234,9 +1238,12 @@ table.table th.num { text-align: center; }
   .category-grid { grid-template-columns: repeat(3, 1fr); }
   .stat-grid { grid-template-columns: repeat(2, 1fr); }
   .chart-grid { grid-template-columns: 1fr; }
-  .admin-shell { grid-template-columns: 1fr; }
-  .admin-sidebar { display: flex; flex-wrap: wrap; gap: 4px; }
-  .admin-sidebar button { width: auto; flex: 1 1 30%; justify-content: flex-start; }
+  .admin-shell { grid-template-columns: 200px minmax(0, 1fr); gap: 16px; }
+}
+
+@media (max-width: 767px) {
+  .admin-shell { grid-template-columns: 170px minmax(0, 1fr); gap: 12px; }
+  .admin-sidebar button { padding: 10px 10px; gap: 8px; font-size: 13px; }
 }
 
 @media (max-width: 899px) {
