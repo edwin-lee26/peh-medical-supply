@@ -886,45 +886,10 @@
     }
 
     /* ------------------------------------------------------------------
-       ADMIN RAIL — slim left sidebar shown on every page when the admin
-       is logged in on this browser, so they can jump straight into the
-       admin dashboard sections from the public site.
-    ------------------------------------------------------------------ */
-    function injectAdminRail() {
-        if (readStore(KEYS.adminSession, false) !== true) return;
-
-        var items = [
-            { section: 'overview',   icon: 'fa-gauge-high',        label: 'Overview' },
-            { section: 'weekly',     icon: 'fa-calendar-week',     label: 'Weekly Demand' },
-            { section: 'products',   icon: 'fa-boxes-stacked',     label: 'Product Management' },
-            { section: 'categories', icon: 'fa-tags',              label: 'Categories' },
-            { section: 'orders',     icon: 'fa-clock-rotate-left', label: 'Order History' },
-            { section: 'analytics',  icon: 'fa-chart-pie',         label: 'Analytics' }
-        ];
-
-        var rail = '<nav class="admin-rail" aria-label="Admin shortcuts">' +
-            items.map(function (it) {
-                return '<a href="admin.html#' + it.section + '" title="' + it.label + '">' +
-                    '<i class="fa-solid ' + it.icon + '" aria-hidden="true"></i>' +
-                    '<span class="admin-rail__label">' + it.label + '</span>' +
-                    '</a>';
-            }).join('') +
-            '<a href="index.html" class="admin-rail__home" title="Back to site">' +
-            '<i class="fa-solid fa-house" aria-hidden="true"></i>' +
-            '<span class="admin-rail__label">Site</span>' +
-            '</a>' +
-            '</nav>';
-
-        document.body.insertAdjacentHTML('afterbegin', rail);
-        document.body.classList.add('has-admin-rail');
-    }
-
-    /* ------------------------------------------------------------------
        INIT — runs on every page
     ------------------------------------------------------------------ */
     function initApp() {
         injectHeader();
-        injectAdminRail();
     }
 
     if (document.readyState === 'loading') {
