@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PEH Medical Supply — Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="home">
+
+  <header class="site-header" id="siteHeader"></header>
+
+  <main class="container page-main">
+
+    <section class="hero">
+      <div class="hero__content">
+        <span class="hero__badge"><i class="fa-solid fa-truck-medical" aria-hidden="true"></i> Internal hospital supply ordering</span>
+        <h1>PEH Medical <span>Supply</span></h1>
+        <p>Browse categories, choose quantities and submit supply orders in a few clicks — made for hospital and clinic staff.</p>
+        <div class="hero__actions">
+          <a href="#departments" class="btn btn-primary btn-lg"><i class="fa-solid fa-layer-group" aria-hidden="true"></i> Choose Department</a>
+          <a href="orders.html" class="btn btn-outline btn-lg"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i> My Orders</a>
+        </div>
+      </div>
+      <div class="hero__stats" id="heroStats">
+        <div class="hero__stat"><strong id="statCategories">0</strong><span>Categories</span></div>
+        <div class="hero__stat"><strong id="statProducts">0</strong><span>Products</span></div>
+        <div class="hero__stat"><strong id="statStock">0</strong><span>Units In Stock</span></div>
+      </div>
+    </section>
+
+    <div class="section-title" id="departments">
+      <div>
+        <h2>Choose Your Department</h2>
+        <p>Select a department to see its categories.</p>
+      </div>
+      <p id="categoryHint"></p>
+    </div>
+
+    <div class="dept-grid" id="categoryGrid">
+      <p class="page-loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Loading…</p>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>PEH Medical Supply</strong> — Internal Hospital/Clinic Supply Ordering System · Demo build, no backend required</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/home.js"></script>
+</body>
+</html>

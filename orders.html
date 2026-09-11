@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orders — PEH Medical Supply</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="orders">
+
+  <header class="site-header" id="siteHeader"></header>
+
+  <main class="container page-main">
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      <strong>Orders</strong>
+    </nav>
+
+    <div class="page-head">
+      <h1>Order List</h1>
+      <a href="products.html" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i> New Order
+      </a>
+    </div>
+
+    <div id="ordersBody"></div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>PEH Medical Supply</strong> — Internal Hospital/Clinic Supply Ordering System · Demo build, no backend required</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/orders.js"></script>
+</body>
+</html>

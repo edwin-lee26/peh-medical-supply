@@ -1,0 +1,13 @@
+{
+  "name": "peh-medical-supply",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PEH Medical Supply ordering site",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

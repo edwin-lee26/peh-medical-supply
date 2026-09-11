@@ -1,0 +1,6 @@
+{
+  "adminPassword": {
+    "salt": "a16616839c1d92b5dd93ac619ce24657",
+    "hash": "b73c1f024f2dd77c9c9534100b57c05f3cfe8289cbfb1a8608e1a7601e801205fd18e95fa275cf0194fc8ca129b1a11cc261d9d2042b0a4b0789718c4bef7476"
+  }
+}

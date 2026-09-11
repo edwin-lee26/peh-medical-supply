@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Department — PEH Medical Supply</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="department">
+
+  <header class="site-header" id="siteHeader"></header>
+
+  <main class="container page-main">
+
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a>
+      <i class="fa-solid fa-chevron-right" aria-hidden="true"></i>
+      <strong id="breadcrumbCurrent">Department</strong>
+    </nav>
+
+    <div class="page-head">
+      <div>
+        <h1 id="pageTitle">Categories</h1>
+        <div class="sub" id="pageSubtitle"></div>
+      </div>
+      <a href="index.html" class="btn btn-outline btn-sm">
+        <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Home
+      </a>
+    </div>
+
+    <div class="category-grid" id="deptCategoryGrid">
+      <p class="page-loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Loading…</p>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p><strong>PEH Medical Supply</strong> — Internal Hospital/Clinic Supply Ordering System · Demo build, no backend required</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/department.js"></script>
+</body>
+</html>
