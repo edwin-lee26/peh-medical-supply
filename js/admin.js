@@ -1587,8 +1587,21 @@
         return false;
     }
 
+    function serverLogout() {
+        // Clear the server-side HttpOnly cookie so the gate asks again.
+        try {
+            fetch('/api/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({}),
+                credentials: 'same-origin'
+            }).catch(function () { /* offline/demo: ignore */ });
+        } catch (e) { /* ignore */ }
+    }
+
     function logout() {
         window.writeStore(MSM_KEYS.adminSession, false);
+        serverLogout();
         document.getElementById('adminLogin').removeAttribute('hidden');
         document.getElementById('adminDashboard').setAttribute('hidden', '');
         document.getElementById('adminShell').setAttribute('hidden', '');
@@ -1606,7 +1619,10 @@
         // Guard: this code only runs on admin.html
         if (!loginSection && !dashboardSection) return;
 
-        if (isLoggedIn()) {
+        if (isLoggedIn() || window.__SERVER_AUTH__ === true) {
+            // Server already verified the password (HttpOnly cookie), so jump
+            // straight to the dashboard on this load.
+            window.writeStore(MSM_KEYS.adminSession, true);
             loginSection.setAttribute('hidden', '');
             dashboardSection.removeAttribute('hidden');
             renderDeptTabs();

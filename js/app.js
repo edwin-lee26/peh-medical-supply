@@ -694,10 +694,6 @@
             '    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>' +
             '    <input type="search" id="globalSearchInput" placeholder="Search code, product or category…" aria-label="Search products">' +
             '  </form>' +
-            '  <a href="admin.html" class="header-login" title="Admin login">' +
-            '    <span class="header-login__label">Admin Login</span>' +
-            '    <i class="fa-solid fa-user-shield" aria-hidden="true"></i>' +
-            '  </a>' +
             '  <a href="cart.html" class="cart-link" title="Shopping cart">' +
             '    <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>' +
             '    <span class="cart-badge" id="cartCount">0</span>' +
