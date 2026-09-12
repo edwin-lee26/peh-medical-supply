@@ -12,6 +12,17 @@
     'use strict';
 
     var currentFilter = { category: '', search: '', department: '' };
+    var searchDebounceTimer = null;
+
+    /* ------------------------------------------------------------------
+       CATEGORIES PAGE URL
+       When browsing by department, the categories page is
+       department.html?dept=X. Falls back to UCC (shared cats).
+    ------------------------------------------------------------------ */
+    function categoriesUrl() {
+        var dept = currentFilter.department || 'UCC';
+        return 'department.html?dept=' + encodeURIComponent(dept);
+    }
 
     /* ------------------------------------------------------------------
        RENDER
@@ -21,6 +32,9 @@
         var title = document.getElementById('pageTitle');
         var subtitle = document.getElementById('pageSubtitle');
         var crumb = document.getElementById('breadcrumbCurrent');
+        var homeLink = document.getElementById('breadcrumbHome');
+        var backBtn = document.getElementById('backBtn');
+        var backLabel = document.getElementById('backBtnLabel');
 
         if (currentFilter.category) {
             if (title) title.textContent = currentFilter.category;
@@ -35,6 +49,11 @@
             if (subtitle) subtitle.textContent = 'Browse the full catalog';
             if (crumb) crumb.textContent = 'All Products';
         }
+
+        // All breadcrumb / back links go to the categories page
+        if (homeLink) homeLink.href = categoriesUrl();
+        if (backBtn) backBtn.href = categoriesUrl();
+        if (backLabel) backLabel.textContent = 'Back to Categories';
     }
 
     function filterProducts() {
@@ -65,17 +84,16 @@
         if (countEl) countEl.textContent = products.length + ' product' + (products.length === 1 ? '' : 's');
 
         if (!products.length) {
-            // Distinguish "category doesn't exist" from "no products match"
             var invalidCategory = currentFilter.category && !getCategory(currentFilter.category);
             grid.innerHTML = emptyState(
                 invalidCategory ? 'fa-circle-question' : 'fa-box-open',
                 invalidCategory ? 'Category not found' : 'No products found',
                 invalidCategory
-                    ? '"' + currentFilter.category + '" is not a valid category. Choose one from the home page.'
+                    ? '"' + currentFilter.category + '" is not a valid category. Choose one from the categories page.'
                     : (currentFilter.search
                         ? 'Try adjusting your search terms.'
                         : (currentFilter.category ? 'There are no products in this category yet.' : 'No products available at the moment.')),
-                '<a href="index.html" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Home</a>'
+                '<a href="' + categoriesUrl() + '" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to Categories</a>'
             );
             return;
         }
@@ -156,12 +174,18 @@
         var qty = sanitizeQuantity(requested, product.stock);
         addToCart({ code: product.code, name: product.name, unit: product.unit, quantity: qty });
         showToast(product.code + ' added to cart', 'success');
+
+        // Auto-return to categories page so the user can continue picking items
+        setTimeout(function () {
+            window.location.href = categoriesUrl();
+        }, 700);
     }
 
     function handleSearch(e) {
         var q = (e.target.value || '').trim();
         currentFilter.search = q;
-        renderGrid();
+        clearTimeout(searchDebounceTimer);
+        searchDebounceTimer = setTimeout(renderGrid, 120);
     }
 
     function init() {

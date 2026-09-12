@@ -362,7 +362,9 @@
             });
         }
         saveCart(cart);
-        refreshCartCount();
+        var totalItems = 0;
+        cart.forEach(function (i) { totalItems += (i.quantity || 0); });
+        refreshCartCount(totalItems);
         return cart;
     }
 
@@ -372,14 +374,18 @@
         var found = cart.find(function (i) { return i.code === code; });
         if (found) found.quantity = qty;
         saveCart(cart);
-        refreshCartCount();
+        var totalItems = 0;
+        cart.forEach(function (i) { totalItems += (i.quantity || 0); });
+        refreshCartCount(totalItems);
         return cart;
     }
 
     function removeFromCart(code) {
         var cart = getCart().filter(function (i) { return i.code !== code; });
         saveCart(cart);
-        refreshCartCount();
+        var totalItems = 0;
+        cart.forEach(function (i) { totalItems += (i.quantity || 0); });
+        refreshCartCount(totalItems);
         return cart;
     }
 
@@ -740,12 +746,15 @@
         });
     }
 
-    function refreshCartCount() {
-        var totals = getCartTotals();
+    function refreshCartCount(overrideItems) {
+        // Pass a precomputed count to avoid re-reading the cart from storage
+        var items = (typeof overrideItems === 'number')
+            ? overrideItems
+            : getCartTotals().items;
         var badges = document.querySelectorAll('#cartCount');
         Array.prototype.forEach.call(badges, function (b) {
-            b.textContent = totals.items;
-            b.classList.toggle('has-items', totals.items > 0);
+            b.textContent = items;
+            b.classList.toggle('has-items', items > 0);
         });
     }
 
