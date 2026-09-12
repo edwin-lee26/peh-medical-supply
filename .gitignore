@@ -4,3 +4,4 @@ npm-debug.log
 Thumbs.db
 data/cloudflared.log
 tunnel/
+data/supabase.json

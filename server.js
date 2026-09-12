@@ -59,6 +59,98 @@ const DATA_DIR = path.join(ROOT, 'data');
 const INBOX_FILE = path.join(DATA_DIR, 'orders.json');
 const CATALOG_FILE = path.join(DATA_DIR, 'catalog.json');
 
+/* ------------------------------------------------------------------
+   SUPABASE PERSISTENCE (optional)
+   When a Supabase project URL + service-role key are configured, the
+   catalog and order inbox are stored in a small `app_state` table
+   (key / value) instead of the disposable container disk.  That way
+   admin saves survive redeploys and cold starts.
+
+   Config sources (first match wins):
+     1. Env vars:  SUPABASE_URL  +  SUPABASE_SERVICE_KEY
+     2. data/supabase.json : { "url": "...", "key": "..." }
+
+   When no config is present the server keeps working exactly as
+   before with the local JSON files (perfect for offline demo / LAN).
+------------------------------------------------------------------ */
+function getSupabaseConfig() {
+    const envUrl = process.env.SUPABASE_URL;
+    const envKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_ANON_KEY;
+    if (envUrl && envKey) return { url: String(envUrl).replace(/\/+$/, ''), key: String(envKey) };
+    try {
+        const cfgPath = path.join(DATA_DIR, 'supabase.json');
+        if (!fs.existsSync(cfgPath)) return null;
+        const cfg = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+        if (cfg && cfg.url && cfg.key) return { url: String(cfg.url).replace(/\/+$/, ''), key: String(cfg.key) };
+    } catch (e) { /* ignore */ }
+    return null;
+}
+const SUPABASE_CONFIG = getSupabaseConfig();
+
+function sbHeaders() {
+    return {
+        'apikey': SUPABASE_CONFIG.key,
+        'Authorization': 'Bearer ' + SUPABASE_CONFIG.key,
+        'Content-Type': 'application/json'
+    };
+}
+
+function sbGet(keyName) {
+    return fetch(
+        SUPABASE_CONFIG.url + '/rest/v1/app_state?key=eq.' + encodeURIComponent(keyName) + '&select=value',
+        { headers: sbHeaders() }
+    ).then(function (r) {
+        if (!r.ok) throw new Error('supabase get ' + r.status);
+        return r.json();
+    }).then(function (rows) {
+        return (rows && rows.length) ? rows[0].value : null;
+    });
+}
+
+function sbSet(keyName, value) {
+    return fetch(
+        SUPABASE_CONFIG.url + '/rest/v1/app_state?on_conflict=key',
+        {
+            method: 'POST',
+            headers: sbHeaders(),
+            body: JSON.stringify([{ key: keyName, value: value }])
+        }
+    ).then(function (r) {
+        if (!r.ok) throw new Error('supabase set ' + r.status);
+    });
+}
+
+function readCatalogFile() {
+    try {
+        if (!fs.existsSync(CATALOG_FILE)) return { products: [], categories: [], departments: null };
+        const parsed = JSON.parse(fs.readFileSync(CATALOG_FILE, 'utf8'));
+        return (parsed && typeof parsed === 'object') ? parsed : {};
+    } catch (e) {
+        return {};
+    }
+}
+
+function writeCatalogFile(catalog) {
+    try {
+        if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+        fs.writeFileSync(CATALOG_FILE, JSON.stringify(catalog, null, 2), 'utf8');
+    } catch (e) { /* demo: ignore write errors */ }
+}
+
+// Ask Supabase for a value; on any miss or error resolve to `fallback`
+// (and seed Supabase from the local file on the very first run).
+function sbGetOrFallback(keyName, fallback) {
+    return sbGet(keyName).then(function (val) {
+        if (val === null || val === undefined) {
+            sbSet(keyName, fallback).catch(function () { /* ignore */ });
+            return fallback;
+        }
+        return val;
+    }).catch(function () {
+        return fallback;
+    });
+}
+
 function readInbox() {
     try {
         const raw = fs.readFileSync(INBOX_FILE, 'utf8');
@@ -75,6 +167,9 @@ function writeInbox(orders) {
         fs.writeFileSync(INBOX_FILE, JSON.stringify(orders, null, 2), 'utf8');
     } catch (e) {
         /* demo: ignore write errors */
+    }
+    if (SUPABASE_CONFIG) {
+        sbSet('inbox', orders).catch(function () { /* offline: ignore */ });
     }
 }
 
@@ -140,9 +235,16 @@ function handleOrderInbox(req, res) {
     }
 
     if (req.method === 'GET') {
-        const inbox = readInbox();
-        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify(inbox));
+        function replyWithOrders(arr) {
+            const inbox = Array.isArray(arr) ? arr : [];
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+            res.end(JSON.stringify(inbox));
+        }
+        if (SUPABASE_CONFIG) {
+            sbGetOrFallback('inbox', readInbox()).then(replyWithOrders);
+        } else {
+            replyWithOrders(readInbox());
+        }
         return true;
     }
 
@@ -172,20 +274,23 @@ function handleCatalogApi(req, res) {
     }
 
     if (req.method === 'GET') {
-        let catalog = {};
-        try {
-            if (fs.existsSync(CATALOG_FILE)) {
-                catalog = JSON.parse(fs.readFileSync(CATALOG_FILE, 'utf8'));
-            }
-        } catch (e) { /* missing/corrupt -> defaults on the client */ }
-        if (!catalog || typeof catalog !== 'object') catalog = {};
-        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify({
-            ok: true,
-            departments: Array.isArray(catalog.departments) ? catalog.departments : null,
-            products: Array.isArray(catalog.products) ? catalog.products : null,
-            categories: Array.isArray(catalog.categories) ? catalog.categories : null
-        }));
+        function replyWithCatalog(catalog) {
+            if (!catalog || typeof catalog !== 'object') catalog = {};
+            res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+            res.end(JSON.stringify({
+                ok: true,
+                departments: Array.isArray(catalog.departments) ? catalog.departments : null,
+                products: Array.isArray(catalog.products) ? catalog.products : null,
+                categories: Array.isArray(catalog.categories) ? catalog.categories : null
+            }));
+        }
+        if (SUPABASE_CONFIG) {
+            // Prefer the Supabase copy (permanent). The very first run
+            // seeds it from the committed catalog file.
+            sbGetOrFallback('catalog', readCatalogFile()).then(replyWithCatalog);
+        } else {
+            replyWithCatalog(readCatalogFile());
+        }
         return true;
     }
 
@@ -214,6 +319,10 @@ function handleCatalogApi(req, res) {
                 const stored = { products: products, categories: categories };
                 if (departments) stored.departments = departments;
                 fs.writeFileSync(CATALOG_FILE, JSON.stringify(stored, null, 2), 'utf8');
+                if (SUPABASE_CONFIG) {
+                    // Permanent persistence — survives redeploys / cold starts.
+                    sbSet('catalog', stored).catch(function () { /* offline: local copy already written */ });
+                }
             } catch (e) { /* demo: ignore write errors */ }
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ ok: true }));
@@ -477,6 +586,10 @@ server.listen(PORT, () => {
     console.log('  ╠══════════════════════════════════════════════════╣');
     console.log('  ║  Local:  http://localhost:' + PORT + '/'.padEnd(30) + '║');
     console.log('  ║  LAN:    http://' + LAN_IP + ':' + PORT + '/'.padEnd(30) + '║');
+    console.log('  ╠══════════════════════════════════════════════════╣');
+    console.log(SUPABASE_CONFIG
+        ? '  ║  Storage: Supabase (persistent)                         ║'
+        : '  ║  Storage: local files (demo — set SUPABASE_URL to persist) ║');
     console.log('  ╚══════════════════════════════════════════════════╝');
     console.log('');
 });
