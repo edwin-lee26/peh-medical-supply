@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backup - PEH Medical Supply</title>
+<style>
+body{font-family:Segoe UI,system-ui,-apple-system,sans-serif;background:#f1f5f9;margin:0;padding:24px;color:#16233b}
+.card{max-width:720px;margin:24px auto;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px;box-shadow:0 8px 24px rgba(15,27,45,.06)}
+h1{margin:0 0 4px;font-size:22px}
+p{color:#5b6b83;margin:6px 0 16px}
+button{background:#0d6efd;color:#fff;border:0;border-radius:10px;padding:10px 16px;font-size:14px;font-weight:600;cursor:pointer;margin-right:8px}
+button.green{background:#0d9488}
+button:hover{opacity:.9}
+textarea{width:100%;box-sizing:border-box;height:260px;font-family:Consolas,"Courier New",monospace;font-size:12.5px;border:1px solid #cbd5e1;border-radius:10px;padding:10px;margin-top:14px;resize:vertical}
+.muted{color:#8b9cb0;font-size:13px}
+.howto{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:13.5px;color:#43536b;margin:14px 0}
+.howto b{color:#16233b}
+</style>
+</head>
+<body>
+<div class="card">
+<h1>Backup your data</h1>
+<p>This page reads whatever is stored in <b>this browser</b> and packs it into a backup file. Open it in the same browser you used to type in your items, on the same PC or phone.</p>
+
+<div class="howto">
+<b>How to use:</b><br>
+1. Tap <b>Create backup</b> - a file <b>msm-backup.json</b> downloads and the text appears below.<br>
+2. Send that file (or copy the text below) to your developer.<br>
+3. Nothing on this page is sent anywhere - it only reads this device.
+</div>
+
+<button onclick="run()">Create backup</button>
+<button class="green" onclick="copyAll()">Copy all to clipboard</button>
+<p class="muted" id="status"></p>
+<textarea id="out" readonly onclick="this.select()" placeholder="The backup JSON will appear here after you tap 'Create backup'. Select it, copy it, and send it in the chat - or use the downloaded file."></textarea>
+</div>
+<script>
+function gather(){
+  var keys=['medicalSupplyProducts','medicalSupplyCategories','medicalSupplyOrders','medicalSupplyAdminSession'];
+  var out={exportedAt:new Date().toISOString()};
+  keys.forEach(function(k){
+    var v=null;
+    try{v=localStorage.getItem(k);}catch(e){v=null;}
+    if(v!==null){try{out[k]=JSON.parse(v);}catch(e){out[k]=v;}}
+  });
+  return out;
+}
+function run(){
+  var data=gather();
+  var json=JSON.stringify(data,null,2);
+  document.getElementById('out').value=json;
+  var n=Object.keys(data).length-1;
+  document.getElementById('status').textContent=n>0 ? 'Backup ready - '+n+' stored item(s) found.' : 'Nothing stored in this browser yet. Are you on the right browser?';
+  try{
+    var blob=new Blob([json],{type:'application/json'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='msm-backup.json';
+    document.body.appendChild(a);a.click();a.remove();
+    document.getElementById('status').textContent+=' (download started too)';
+  }catch(e){}
+}
+function copyAll(){
+  var t=document.getElementById('out');t.select();t.setSelectionRange(0,999999);
+  try{document.execCommand('copy');document.getElementById('status').textContent='Copied to clipboard - paste it in the chat.';}catch(e){}
+}
+</script>
+</body>
+</html>
