@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "orderId": "ORD-20260914-001",
+    "date": "2026-09-14",
+    "time": "01:00",
+    "status": "Submitted",
+    "items": [
+      {
+        "code": "S011077",
+        "name": "Resuscitator (Adult)",
+        "quantity": 1,
+        "unit": "Each"
+      }
+    ]
+  }
+]
