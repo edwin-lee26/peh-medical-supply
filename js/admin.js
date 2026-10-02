@@ -1406,6 +1406,7 @@
                     '  <div class="order-item__code">' + escapeHtml(it.code) + '</div>' +
                     '  <div class="order-item__name">' + escapeHtml(it.name) + '</div>' +
                     '  <div class="order-item__qty"><span class="badge badge--plain">Qty ' + parseInt(it.quantity, 10) + '</span></div>' +
+                    (it.description ? '  <div class="order-item__desc">' + escapeHtml(it.description) + '</div>' : '') +
                     '</div>';
             });
             openDialog({
@@ -1543,6 +1544,11 @@
     /* ------------------------------------------------------------------
        TABS
     ------------------------------------------------------------------ */
+    function currentSection() {
+        var active = document.querySelector('#adminShell .admin-sidebar button.is-active');
+        return active ? active.getAttribute('data-section') : 'overview';
+    }
+
     function switchSection(name) {
         // Sidebar buttons
         Array.prototype.forEach.call(
@@ -1674,6 +1680,23 @@
                 });
             });
         }
+
+        // Auto-refresh the order inbox continuously so customer orders
+        // appear in real time without reloading the page.
+        var lastPollCount = getOrders().length;
+        var pollTimer = window.setInterval(function () {
+            if (document.hidden) return;
+            if (dashboardSection.hasAttribute('hidden')) return;
+            syncAdminOrders(function () {
+                var count = getOrders().length;
+                if (count > lastPollCount && lastPollCount >= 0) {
+                    showToast('New order received (' + (count - lastPollCount) + ' new)', 'success');
+                }
+                lastPollCount = count;
+                if (currentSection() === 'orders') renderAdminOrders();
+                renderOverview();
+            });
+        }, 8000);
 
         // Clear all order history
         var clearAllBtn = document.getElementById('clearAllOrdersBtn');

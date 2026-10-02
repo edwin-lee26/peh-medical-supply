@@ -358,7 +358,8 @@
                 code: item.code,
                 name: item.name,
                 unit: item.unit || '',
-                quantity: item.quantity || 1
+                quantity: item.quantity || 1,
+                description: item.description || ''
             });
         }
         saveCart(cart);
@@ -573,11 +574,17 @@
             time: time,
             status: 'Submitted',
             items: cart.map(function (i) {
+                var desc = i.description;
+                if (!desc) {
+                    var prod = getProduct(i.code);
+                    if (prod) desc = prod.description || '';
+                }
                 return {
                     code: i.code,
                     name: i.name,
                     quantity: i.quantity,
-                    unit: i.unit || ''
+                    unit: i.unit || '',
+                    description: desc || ''
                 };
             })
         };

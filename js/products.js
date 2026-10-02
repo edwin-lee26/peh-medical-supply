@@ -172,7 +172,7 @@
             showToast('Only ' + product.stock + ' units of ' + product.code + ' in stock.', 'warning');
         }
         var qty = sanitizeQuantity(requested, product.stock);
-        addToCart({ code: product.code, name: product.name, unit: product.unit, quantity: qty });
+        addToCart({ code: product.code, name: product.name, unit: product.unit, quantity: qty, description: product.description || '' });
         showToast(product.code + ' added to cart', 'success');
 
         // Auto-return to categories page so the user can continue picking items

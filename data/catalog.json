@@ -903,20 +903,6 @@
       "order": 999
     },
     {
-      "id": "S010846",
-      "code": "S010846",
-      "name": "IV Tagederm",
-      "category": "Cannulation",
-      "department": "UCC",
-      "description": "50/BOX",
-      "unit": "Each",
-      "stock": 10000,
-      "parLevel": 150,
-      "image": "",
-      "parUCC": 150,
-      "order": 999
-    },
-    {
       "id": "S054178",
       "code": "S054178",
       "name": "Infusomat Spaceline",
@@ -3837,6 +3823,36 @@
       "parLevel": 5,
       "image": "",
       "parUCC": 5,
+      "order": 999
+    },
+    {
+      "id": "S054260",
+      "code": "S054260",
+      "name": "IV Tagederm",
+      "category": "Cannulation",
+      "department": "Both",
+      "description": "100/BOX",
+      "unit": "Each",
+      "stock": 100000,
+      "parLevel": 50,
+      "image": "",
+      "parUCC": 400,
+      "parPUCC": 100,
+      "order": 999
+    },
+    {
+      "id": "S112405",
+      "code": "S112405",
+      "name": "Gauze 5cm",
+      "category": "Cannulation",
+      "department": "Both",
+      "description": "50/BOX",
+      "unit": "Each",
+      "stock": 10000,
+      "parLevel": 50,
+      "image": "",
+      "parUCC": 100,
+      "parPUCC": 50,
       "order": 999
     }
   ],

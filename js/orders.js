@@ -91,6 +91,7 @@
             '  <table style="width:100%;border-collapse:collapse;margin-top:10px;">' +
             '    <thead><tr><th style="border:1px solid #ccc;padding:6px 10px;text-align:left;font-size:12px;">Code</th>' +
             '    <th style="border:1px solid #ccc;padding:6px 10px;text-align:left;font-size:12px;">Product Name</th>' +
+            '    <th style="border:1px solid #ccc;padding:6px 10px;text-align:left;font-size:12px;">Description</th>' +
             '    <th style="border:1px solid #ccc;padding:6px 10px;text-align:center;font-size:12px;">Qty</th>' +
             '    <th style="border:1px solid #ccc;padding:6px 10px;text-align:left;font-size:12px;">Unit</th></tr></thead>' +
             '    <tbody>' +
@@ -98,6 +99,7 @@
                 return '<tr>' +
                     '<td style="border:1px solid #ccc;padding:6px 10px;font-family:Consolas,monospace;font-size:13px;">' + escapeHtml(it.code) + '</td>' +
                     '<td style="border:1px solid #ccc;padding:6px 10px;">' + escapeHtml(it.name) + '</td>' +
+                    '<td style="border:1px solid #ccc;padding:6px 10px;">' + escapeHtml(it.description || '') + '</td>' +
                     '<td style="border:1px solid #ccc;padding:6px 10px;text-align:center;font-weight:700;">' + parseInt(it.quantity, 10) + '</td>' +
                     '<td style="border:1px solid #ccc;padding:6px 10px;">' + escapeHtml(it.unit) + '</td>' +
                     '</tr>';
@@ -119,6 +121,7 @@
                 '  <div class="order-item__code">' + escapeHtml(it.code) + '</div>' +
                 '  <div class="order-item__name">' + escapeHtml(it.name) + '</div>' +
                 '  <div class="order-item__qty"><span class="badge badge--plain">Qty ' + parseInt(it.quantity, 10) + '</span></div>' +
+                (it.description ? '  <div class="order-item__desc">' + escapeHtml(it.description) + '</div>' : '') +
                 '</div>';
         });
 

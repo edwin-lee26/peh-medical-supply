@@ -1090,6 +1090,7 @@ table.table th.num { text-align: center; }
 .order-item__code { font-weight: 700; font-size: 13px; font-family: Consolas, monospace; color: var(--muted); }
 .order-item__name { font-size: 14px; }
 .order-item__qty { text-align: right; }
+.order-item__desc { grid-column: 1 / -1; font-size: 13px; color: var(--muted); padding-top: 2px; border-top: 1px dashed var(--border); margin-top: 2px; }
 
 .order-detail-meta { display: flex; flex-wrap: wrap; gap: 18px; background: #f8fafc; border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 14px; font-size: 13.5px; }
 .order-detail-meta b { color: #16233b; }
